@@ -159,6 +159,7 @@ class Predictor(BasePredictor):
         """Load the model into memory to make running multiple predictions efficient"""
 
         start = time.time()
+        print("Setting up predictor...")
         self.tuned_model = False
         self.tuned_weights = None
         if str(weights) == "weights":
