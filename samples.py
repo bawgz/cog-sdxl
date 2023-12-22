@@ -16,6 +16,7 @@ import requests
 
 def gen(output_fn, **kwargs):
     if os.path.exists(output_fn):
+        print("Skipping", output_fn)
         return
 
     print("Generating", output_fn)
