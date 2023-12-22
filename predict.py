@@ -36,7 +36,7 @@ SDXL_MODEL_CACHE = "./sdxl-cache"
 REFINER_MODEL_CACHE = "./refiner-cache"
 SAFETY_CACHE = "./safety-cache"
 FEATURE_EXTRACTOR = "./feature-extractor"
-SDXL_URL = "https://replicate.delivery/pbxt/K5y9sdLlEb4LY7voJB2qoULbjc1HdArHwqOknLXKQVL7m6wz/trained_model.tar"
+SDXL_URL = "https://weights.replicate.delivery/default/sdxl/sdxl-vae-upcast-fix.tar"
 REFINER_URL = (
     "https://weights.replicate.delivery/default/sdxl/refiner-no-vae-no-encoder-1.0.tar"
 )
