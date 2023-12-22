@@ -163,6 +163,7 @@ class Predictor(BasePredictor):
         self.tuned_model = False
         self.tuned_weights = None
         if str(weights) == "weights":
+            print("Setting weights to None ", weights)
             weights = None
 
         self.weights_cache = WeightsDownloadCache()
