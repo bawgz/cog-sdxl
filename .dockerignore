@@ -1,6 +1,7 @@
 sdxl-cache/
 refiner-cache/
 safety-cache/
+trained-model/
 *.png
 cache/
 checkpoint/
@@ -16,6 +17,7 @@ temp/
 temp_in/
 cog_instance_data/
 example_datasets/
+trained_model.tar
 zeke_data.tar
 data.tar
 zeke.zip
@@ -23,6 +25,7 @@ sketch-mountains-input.jpeg
 training_out*
 weights
 inference_*
+trained-model
 *.zip
 tmp/
 blip-cache/

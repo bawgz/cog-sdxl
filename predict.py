@@ -73,8 +73,8 @@ class Predictor(BasePredictor):
 
         # weights can be a URLPath, which behaves in unexpected ways
         if weights is None:
-            print("Weights is None, setting to ./trained-model/trained_model.tar")
-            weights = "./trained-model/trained_model.tar"
+            print("Weights is None, setting to https://replicate.delivery/pbxt/K5y9sdLlEb4LY7voJB2qoULbjc1HdArHwqOknLXKQVL7m6wz/trained_model.tar")
+            weights = "https://replicate.delivery/pbxt/K5y9sdLlEb4LY7voJB2qoULbjc1HdArHwqOknLXKQVL7m6wz/trained_model.tar"
         else:
             print("Weights is not None, setting to ", str(weights))
             weights = str(weights)
