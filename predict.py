@@ -72,7 +72,12 @@ class Predictor(BasePredictor):
         from no_init import no_init_or_tensor
 
         # weights can be a URLPath, which behaves in unexpected ways
-        weights = str(weights)
+        if weights is None:
+            print("Weights is None, setting to ./trained-model")
+            weights = "./trained-model"
+        else:
+            print("Weights is not None, setting to ", str(weights))
+            weights = str(weights)
         if self.tuned_weights == weights:
             print("skipping loading .. weights already loaded")
             return
