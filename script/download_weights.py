@@ -3,6 +3,7 @@
 # internet, which will take a long time.
 
 import torch
+import subprocess
 from diffusers import AutoencoderKL, DiffusionPipeline
 from diffusers.pipelines.stable_diffusion.safety_checker import (
     StableDiffusionSafetyChecker,
@@ -48,3 +49,7 @@ safety = StableDiffusionSafetyChecker.from_pretrained(
 )
 
 safety.save_pretrained("./safety-cache")
+
+
+url = "https://replicate.delivery/pbxt/K7ku1HCBJMUchwXERHHSMi4Vkm3W75Qox5Rt5nKG7kGYmgkf/trained_model.tar"
+finetuned_model = subprocess.check_output(["pget", "-x", url, "./trained-model"], close_fds=True)

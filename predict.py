@@ -73,8 +73,8 @@ class Predictor(BasePredictor):
 
         # weights can be a URLPath, which behaves in unexpected ways
         if weights is None:
-            print("Weights is None, setting to https://replicate.delivery/pbxt/K5y9sdLlEb4LY7voJB2qoULbjc1HdArHwqOknLXKQVL7m6wz/trained_model.tar")
-            weights = "https://replicate.delivery/pbxt/K5y9sdLlEb4LY7voJB2qoULbjc1HdArHwqOknLXKQVL7m6wz/trained_model.tar"
+            weights = "https://replicate.delivery/pbxt/K7ku1HCBJMUchwXERHHSMi4Vkm3W75Qox5Rt5nKG7kGYmgkf/trained_model.tar"
+            print("Weights is None, setting to ", weights)
         else:
             print("Weights is not None, setting to ", str(weights))
             weights = str(weights)
@@ -158,6 +158,7 @@ class Predictor(BasePredictor):
             params = json.load(f)
         self.token_map = params
 
+        print("Setting tuned_model to True")
         self.tuned_model = True
 
     def setup(self, weights: Optional[Path] = None):
@@ -351,6 +352,7 @@ class Predictor(BasePredictor):
             seed = int.from_bytes(os.urandom(2), "big")
         print(f"Using seed: {seed}")
 
+        print("replicate_weights: ", replicate_weights)
         if replicate_weights:
             self.load_trained_weights(replicate_weights, self.txt2img_pipe)
         
@@ -359,6 +361,7 @@ class Predictor(BasePredictor):
             self.txt2img_pipe.vae.to(dtype=torch.float16)
 
         sdxl_kwargs = {}
+        print("tuned_model: ", self.tuned_model)
         if self.tuned_model:
             # consistency with fine-tuning API
             for k, v in self.token_map.items():
