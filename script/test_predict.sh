@@ -1,1 +1,1 @@
-cog predict -i prompt="a photo of TOK"
+sudo cog predict -i prompt="a photo of TOK"
