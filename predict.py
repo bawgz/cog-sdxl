@@ -178,7 +178,7 @@ class Predictor(BasePredictor):
             variant="fp16",
         )
         self.is_lora = False
-        self.txt2img_pipe.load_lora_weights("./trained-model", lora_name="lora.safetensors", adapter_name="LUK")
+        self.txt2img_pipe.load_lora_weights("./trained-model", weight_name="lora.safetensors", adapter_name="LUK")
         # self.load_trained_weights(weights, self.txt2img_pipe)
 
         self.txt2img_pipe.to("cuda")
