@@ -177,8 +177,8 @@ class Predictor(BasePredictor):
         )
 
         self.is_lora = False
-        self.txt2img_pipe.load_lora_weights("./trained-model", weight_name="lora.safetensors", adapter_name="LUK")
-        self.txt2img_pipe.load_lora_weights("./trained-model-2", weight_name="lora.safetensors", adapter_name="TOK")
+        self.txt2img_pipe.load_lora_weights("./trained-model-luk", weight_name="lora.safetensors", adapter_name="LUK")
+        self.txt2img_pipe.load_lora_weights("./trained-model-tok", weight_name="lora.safetensors", adapter_name="TOK")
 
         self.txt2img_pipe.set_adapters(["LUK", "TOK"], adapter_weights=[1.0, 1.0])
 
