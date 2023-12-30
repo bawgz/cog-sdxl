@@ -180,8 +180,6 @@ class Predictor(BasePredictor):
         self.txt2img_pipe.load_lora_weights("./trained-model-luk", weight_name="lora.safetensors", adapter_name="LUK")
         self.txt2img_pipe.load_lora_weights("./trained-model-tok", weight_name="lora.safetensors", adapter_name="TOK")
 
-        self.txt2img_pipe.set_adapters(["LUK", "TOK"], adapter_weights=[0.8, 0.5])
-
         # self.load_trained_weights(weights, self.txt2img_pipe)
 
         self.txt2img_pipe.to("cuda")
@@ -306,6 +304,12 @@ class Predictor(BasePredictor):
             le=1.0,
             default=0.6,
         ),
+        lora_scale2: float = Input(
+            description="LoRA additive scale. Only applicable on trained models.",
+            ge=0.0,
+            le=1.0,
+            default=0.6,
+        ),
         # replicate_weights: str = Input(
         #     description="Replicate LoRA weights to use. Leave blank to use the default weights.",
         #     default=None,
@@ -320,6 +324,9 @@ class Predictor(BasePredictor):
         if seed is None:
             seed = int.from_bytes(os.urandom(2), "big")
         print(f"Using seed: {seed}")
+
+        print("setting addapters")
+        self.txt2img_pipe.set_adapters(["LUK", "TOK"], adapter_weights=[lora_scale, lora_scale2])
         
         # OOMs can leave vae in bad state
         if self.txt2img_pipe.vae.dtype == torch.float32:
