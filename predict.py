@@ -364,5 +364,7 @@ class Predictor(BasePredictor):
             raise Exception(
                 f"NSFW content detected. Try running it again, or try a different prompt."
             )
+        
+        print("test")
 
         return output_paths
