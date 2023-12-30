@@ -180,7 +180,7 @@ class Predictor(BasePredictor):
         self.txt2img_pipe.load_lora_weights("./trained-model-luk", weight_name="lora.safetensors", adapter_name="LUK")
         self.txt2img_pipe.load_lora_weights("./trained-model-tok", weight_name="lora.safetensors", adapter_name="TOK")
 
-        self.txt2img_pipe.set_adapters(["LUK", "TOK"], adapter_weights=[1.0, 1.0])
+        self.txt2img_pipe.set_adapters(["LUK", "TOK"], adapter_weights=[0.8, 0.5])
 
         # self.load_trained_weights(weights, self.txt2img_pipe)
 
