@@ -345,10 +345,10 @@ class Predictor(BasePredictor):
 
         prompt2 = prompt
 
-        if self.tuned_model:
-            # consistency with fine-tuning API
-            for k, v in self.token_map.items():
-                prompt = prompt.replace(k, v)
+        # if self.tuned_model:
+        #     # consistency with fine-tuning API
+        #     for k, v in self.token_map.items():
+        #         prompt = prompt.replace(k, v)
         print(f"Prompt: {prompt}")
 
         sdxl_kwargs["width"] = width
