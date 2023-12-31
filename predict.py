@@ -33,13 +33,13 @@ from transformers import CLIPImageProcessor
 from dataset_and_utils import TokenEmbeddingsHandler
 
 SDXL_MODEL_CACHE = "./sdxl-cache"
-# REFINER_MODEL_CACHE = "./refiner-cache"
+REFINER_MODEL_CACHE = "./refiner-cache"
 # SAFETY_CACHE = "./safety-cache"
 # FEATURE_EXTRACTOR = "./feature-extractor"
 SDXL_URL = "https://weights.replicate.delivery/default/sdxl/sdxl-vae-upcast-fix.tar"
-# REFINER_URL = (
-#     "https://weights.replicate.delivery/default/sdxl/refiner-no-vae-no-encoder-1.0.tar"
-# )
+REFINER_URL = (
+    "https://weights.replicate.delivery/default/sdxl/refiner-no-vae-no-encoder-1.0.tar"
+)
 # SAFETY_URL = "https://weights.replicate.delivery/default/sdxl/safety-1.0.tar"
 
 
@@ -73,7 +73,7 @@ class Predictor(BasePredictor):
 
         # weights can be a URLPath, which behaves in unexpected ways
         if weights is None:
-            weights = "./trained-model"
+            weights = "./trained-model-luk"
             print("Weights is None, setting to ", weights)
         else:
             print("Weights is not None, setting to ", str(weights))
@@ -176,11 +176,18 @@ class Predictor(BasePredictor):
             variant="fp16",
         )
 
+        self.txt2img_pipe2 = DiffusionPipeline.from_pretrained(
+            SDXL_MODEL_CACHE,
+            torch_dtype=torch.float16,
+            use_safetensors=True,
+            variant="fp16",
+        )
+
         self.is_lora = False
         self.txt2img_pipe.load_lora_weights("./trained-model-luk", weight_name="lora.safetensors", adapter_name="LUK")
         self.txt2img_pipe.load_lora_weights("./trained-model-tok", weight_name="lora.safetensors", adapter_name="TOK")
 
-        # self.load_trained_weights(weights, self.txt2img_pipe)
+        self.load_trained_weights(weights, self.txt2img_pipe2)
 
         self.txt2img_pipe.to("cuda")
 
@@ -214,19 +221,19 @@ class Predictor(BasePredictor):
         # FIXME(ja): if the answer to above is use VAE/Text_Encoder_2 from fine-tune
         #            what does this imply about lora + refiner? does the refiner need to know about
 
-        # if not os.path.exists(REFINER_MODEL_CACHE):
-        #     download_weights(REFINER_URL, REFINER_MODEL_CACHE)
+        if not os.path.exists(REFINER_MODEL_CACHE):
+            download_weights(REFINER_URL, REFINER_MODEL_CACHE)
 
-        # print("Loading refiner pipeline...")
-        # self.refiner = DiffusionPipeline.from_pretrained(
-        #     REFINER_MODEL_CACHE,
-        #     text_encoder_2=self.txt2img_pipe.text_encoder_2,
-        #     vae=self.txt2img_pipe.vae,
-        #     torch_dtype=torch.float16,
-        #     use_safetensors=True,
-        #     variant="fp16",
-        # )
-        # self.refiner.to("cuda")
+        print("Loading refiner pipeline...")
+        self.refiner = DiffusionPipeline.from_pretrained(
+            REFINER_MODEL_CACHE,
+            text_encoder_2=self.txt2img_pipe.text_encoder_2,
+            vae=self.txt2img_pipe.vae,
+            torch_dtype=torch.float16,
+            use_safetensors=True,
+            variant="fp16",
+        )
+        self.refiner.to("cuda")
         print("setup took: ", time.time() - start)
         # self.txt2img_pipe.__class__.encode_prompt = new_encode_prompt
 
@@ -279,21 +286,21 @@ class Predictor(BasePredictor):
         seed: int = Input(
             description="Random seed. Leave blank to randomize the seed", default=None
         ),
-        # refine: str = Input(
-        #     description="Which refine style to use",
-        #     choices=["no_refiner", "expert_ensemble_refiner", "base_image_refiner"],
-        #     default="no_refiner",
-        # ),
-        # high_noise_frac: float = Input(
-        #     description="For expert_ensemble_refiner, the fraction of noise to use",
-        #     default=0.8,
-        #     le=1.0,
-        #     ge=0.0,
-        # ),
-        # refine_steps: int = Input(
-        #     description="For base_image_refiner, the number of steps to refine, defaults to num_inference_steps",
-        #     default=None,
-        # ),
+        refine: str = Input(
+            description="Which refine style to use",
+            choices=["no_refiner", "expert_ensemble_refiner", "base_image_refiner"],
+            default="no_refiner",
+        ),
+        high_noise_frac: float = Input(
+            description="For expert_ensemble_refiner, the fraction of noise to use",
+            default=0.8,
+            le=1.0,
+            ge=0.0,
+        ),
+        refine_steps: int = Input(
+            description="For base_image_refiner, the number of steps to refine, defaults to num_inference_steps",
+            default=None,
+        ),
         # apply_watermark: bool = Input(
         #     description="Applies a watermark to enable determining if an image is generated in downstream applications. If you have other provisions for generating or deploying images safely, you can use this to disable watermarking.",
         #     default=True,
@@ -343,8 +350,10 @@ class Predictor(BasePredictor):
         sdxl_kwargs["width"] = width
         sdxl_kwargs["height"] = height
         pipe = self.txt2img_pipe
+        pipe2 = self.txt2img_pipe2
 
         pipe.scheduler = SCHEDULERS[scheduler].from_config(pipe.scheduler.config)
+        pipe2.scheduler = SCHEDULERS[scheduler].from_config(pipe2.scheduler.config)
         generator = torch.Generator("cuda").manual_seed(seed)
 
         common_args = {
@@ -360,17 +369,18 @@ class Predictor(BasePredictor):
             sdxl_kwargs["cross_attention_kwargs"] = {"scale": lora_scale}
 
         output = pipe(**common_args, **sdxl_kwargs)
+        output2 = pipe2(**common_args, **sdxl_kwargs)
 
         output_paths = []
         for i, image in enumerate(output.images):
-            output_path = f"/tmp/out-{i}.png"
+            output_path = f"/tmp/out-0{i}.png"
             image.save(output_path)
             output_paths.append(Path(output_path))
 
-        if len(output_paths) == 0:
-            raise Exception(
-                f"NSFW content detected. Try running it again, or try a different prompt."
-            )
+        for i, image in enumerate(output2.images):
+            output_path = f"/tmp/out-1{i}.png"
+            image.save(output_path)
+            output_paths.append(Path(output_path))
         
         print("test")
 
