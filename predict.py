@@ -369,17 +369,20 @@ class Predictor(BasePredictor):
             sdxl_kwargs["cross_attention_kwargs"] = {"scale": lora_scale}
 
         output = pipe(**common_args, **sdxl_kwargs)
-        output2 = pipe2(**common_args, **sdxl_kwargs)
 
         output_paths = []
         for i, image in enumerate(output.images):
             output_path = f"/tmp/out-0{i}.png"
             image.save(output_path)
+            print("Saved image to: ", output_path)
             output_paths.append(Path(output_path))
 
+
+        output2 = pipe2(**common_args, **sdxl_kwargs)
         for i, image in enumerate(output2.images):
             output_path = f"/tmp/out-1{i}.png"
             image.save(output_path)
+            print("Saved image to: ", output_path)
             output_paths.append(Path(output_path))
         
         print("test")
