@@ -190,6 +190,7 @@ class Predictor(BasePredictor):
         self.load_trained_weights("./trained-model-luk", self.txt2img_pipe2)
 
         self.txt2img_pipe.to("cuda")
+        self.txt2img_pipe2.to("cuda")
 
         # print("Loading SDXL img2img pipeline...")
         # self.img2img_pipe = StableDiffusionXLImg2ImgPipeline(
