@@ -342,6 +342,9 @@ class Predictor(BasePredictor):
 
         sdxl_kwargs = {}
         print("tuned_model: ", self.tuned_model)
+
+        prompt2 = prompt
+
         if self.tuned_model:
             # consistency with fine-tuning API
             for k, v in self.token_map.items():
@@ -365,11 +368,19 @@ class Predictor(BasePredictor):
             "num_inference_steps": num_inference_steps,
         }
 
+        common_args2 = {
+            "prompt": [prompt2] * num_outputs,
+            "negative_prompt": [negative_prompt] * num_outputs,
+            "guidance_scale": guidance_scale,
+            "generator": generator,
+            "num_inference_steps": num_inference_steps,
+        }
+
         print("Is LoRA: ", self.is_lora)
         if self.is_lora:
             sdxl_kwargs["cross_attention_kwargs"] = {"scale": lora_scale}
 
-        output2 = pipe2(**common_args, **sdxl_kwargs)
+        output2 = pipe2(**common_args2, **sdxl_kwargs)
         
         output_paths = []
         for i, image in enumerate(output2.images):
