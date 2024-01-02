@@ -34,13 +34,13 @@ from dataset_and_utils import TokenEmbeddingsHandler
 
 SDXL_MODEL_CACHE = "./sdxl-cache"
 REFINER_MODEL_CACHE = "./refiner-cache"
-# SAFETY_CACHE = "./safety-cache"
-# FEATURE_EXTRACTOR = "./feature-extractor"
+SAFETY_CACHE = "./safety-cache"
+FEATURE_EXTRACTOR = "./feature-extractor"
 SDXL_URL = "https://weights.replicate.delivery/default/sdxl/sdxl-vae-upcast-fix.tar"
 REFINER_URL = (
     "https://weights.replicate.delivery/default/sdxl/refiner-no-vae-no-encoder-1.0.tar"
 )
-# SAFETY_URL = "https://weights.replicate.delivery/default/sdxl/safety-1.0.tar"
+SAFETY_URL = "https://weights.replicate.delivery/default/sdxl/safety-1.0.tar"
 
 
 class KarrasDPM:
@@ -88,49 +88,64 @@ class Predictor(BasePredictor):
 
         # load UNET
         print("Loading fine-tuned model")
-        self.is_lora = True
+        self.is_lora = False
 
-        print("Loading Unet LoRA")
+        maybe_unet_path = os.path.join(local_weights_cache, "unet.safetensors")
+        if not os.path.exists(maybe_unet_path):
+            print("Does not have Unet. assume we are using LoRA")
+            self.is_lora = True
 
-        unet = pipe.unet
+        if not self.is_lora:
+            print("Loading Unet")
 
-        tensors = load_file(os.path.join(local_weights_cache, "lora.safetensors"))
-
-        unet_lora_attn_procs = {}
-        name_rank_map = {}
-        for tk, tv in tensors.items():
-            # up is N, d
-            if tk.endswith("up.weight"):
-                proc_name = ".".join(tk.split(".")[:-3])
-                r = tv.shape[1]
-                name_rank_map[proc_name] = r
-
-        for name, attn_processor in unet.attn_processors.items():
-            cross_attention_dim = (
-                None
-                if name.endswith("attn1.processor")
-                else unet.config.cross_attention_dim
+            new_unet_params = load_file(
+                os.path.join(local_weights_cache, "unet.safetensors")
             )
-            if name.startswith("mid_block"):
-                hidden_size = unet.config.block_out_channels[-1]
-            elif name.startswith("up_blocks"):
-                block_id = int(name[len("up_blocks.")])
-                hidden_size = list(reversed(unet.config.block_out_channels))[
-                    block_id
-                ]
-            elif name.startswith("down_blocks"):
-                block_id = int(name[len("down_blocks.")])
-                hidden_size = unet.config.block_out_channels[block_id]
-            with no_init_or_tensor():
-                module = LoRAAttnProcessor2_0(
-                    hidden_size=hidden_size,
-                    cross_attention_dim=cross_attention_dim,
-                    rank=name_rank_map[name],
-                )
-            unet_lora_attn_procs[name] = module.to("cuda", non_blocking=True)
+            # this should return _IncompatibleKeys(missing_keys=[...], unexpected_keys=[])
+            pipe.unet.load_state_dict(new_unet_params, strict=False)
 
-        unet.set_attn_processor(unet_lora_attn_procs)
-        unet.load_state_dict(tensors, strict=False)
+        else:
+            print("Loading Unet LoRA")
+
+            unet = pipe.unet
+
+            tensors = load_file(os.path.join(local_weights_cache, "lora.safetensors"))
+
+            unet_lora_attn_procs = {}
+            name_rank_map = {}
+            for tk, tv in tensors.items():
+                # up is N, d
+                if tk.endswith("up.weight"):
+                    proc_name = ".".join(tk.split(".")[:-3])
+                    r = tv.shape[1]
+                    name_rank_map[proc_name] = r
+
+            for name, attn_processor in unet.attn_processors.items():
+                cross_attention_dim = (
+                    None
+                    if name.endswith("attn1.processor")
+                    else unet.config.cross_attention_dim
+                )
+                if name.startswith("mid_block"):
+                    hidden_size = unet.config.block_out_channels[-1]
+                elif name.startswith("up_blocks"):
+                    block_id = int(name[len("up_blocks.")])
+                    hidden_size = list(reversed(unet.config.block_out_channels))[
+                        block_id
+                    ]
+                elif name.startswith("down_blocks"):
+                    block_id = int(name[len("down_blocks.")])
+                    hidden_size = unet.config.block_out_channels[block_id]
+                with no_init_or_tensor():
+                    module = LoRAAttnProcessor2_0(
+                        hidden_size=hidden_size,
+                        cross_attention_dim=cross_attention_dim,
+                        rank=name_rank_map[name],
+                    )
+                unet_lora_attn_procs[name] = module.to("cuda", non_blocking=True)
+
+            unet.set_attn_processor(unet_lora_attn_procs)
+            unet.load_state_dict(tensors, strict=False)
 
         # load text
         handler = TokenEmbeddingsHandler(
@@ -167,35 +182,17 @@ class Predictor(BasePredictor):
             download_weights(SDXL_URL, SDXL_MODEL_CACHE)
 
         print("Loading sdxl txt2img pipeline...")
-        # self.txt2img_pipe = DiffusionPipeline.from_pretrained(
-        #     SDXL_MODEL_CACHE,
-        #     torch_dtype=torch.float16,
-        #     use_safetensors=True,
-        #     variant="fp16",
-        # )
-
-        self.txt2img_pipe2 = DiffusionPipeline.from_pretrained(
+        self.txt2img_pipe = DiffusionPipeline.from_pretrained(
             SDXL_MODEL_CACHE,
             torch_dtype=torch.float16,
             use_safetensors=True,
             variant="fp16",
         )
-
         self.is_lora = False
+        self.load_trained_weights("https://replicate.delivery/pbxt/K8l70F8kIPrIy6GDcoMok2k2C7EJSeWL3kQ4V52LKhsBqhe8/trained_model_luk.tar", self.txt2img_pipe)
 
-        self.load_trained_weights("https://replicate.delivery/pbxt/K8l70F8kIPrIy6GDcoMok2k2C7EJSeWL3kQ4V52LKhsBqhe8/trained_model_luk.tar", self.txt2img_pipe2)
 
-        if not os.path.exists("./trained-model-luk"):
-          download_weights("https://replicate.delivery/pbxt/K8l70F8kIPrIy6GDcoMok2k2C7EJSeWL3kQ4V52LKhsBqhe8/trained_model_luk.tar", "./trained-model-luk")
-
-        # if not os.path.exists("./trained-model-tok"):
-        #   download_weights("https://replicate.delivery/pbxt/K7ku1HCBJMUchwXERHHSMi4Vkm3W75Qox5Rt5nKG7kGYmgkf/trained_model.tar", "trained-model-tok")
-
-        # self.txt2img_pipe.load_lora_weights("./trained-model-luk", weight_name="lora.safetensors", adapter_name="LUK")
-        # self.txt2img_pipe.load_lora_weights("./trained-model-tok", weight_name="lora.safetensors", adapter_name="TOK")
-
-        # self.txt2img_pipe.to("cuda")
-        self.txt2img_pipe2.to("cuda")
+        self.txt2img_pipe.to("cuda")
 
         # print("Loading SDXL img2img pipeline...")
         # self.img2img_pipe = StableDiffusionXLImg2ImgPipeline(
@@ -341,66 +338,40 @@ class Predictor(BasePredictor):
         # self.txt2img_pipe.set_adapters(["LUK", "TOK"], adapter_weights=[lora_scale, lora_scale2])
         
         # OOMs can leave vae in bad state
-        if self.txt2img_pipe2.vae.dtype == torch.float32:
-            print("resetting vae to float16")
-            self.txt2img_pipe2.vae.to(dtype=torch.float16)
+        if self.txt2img_pipe.vae.dtype == torch.float32:
+            self.txt2img_pipe.vae.to(dtype=torch.float16)
 
         sdxl_kwargs = {}
-
-        prompt2 = prompt
-
         if self.tuned_model:
             # consistency with fine-tuning API
             for k, v in self.token_map.items():
-                prompt2 = prompt2.replace(k, v)
-
-        print("prompt2: ", prompt2)
-        # print(f"Prompt: {prompt}")
-
+                prompt = prompt.replace(k, v)
+        print(f"Prompt: {prompt}")
         sdxl_kwargs["width"] = width
         sdxl_kwargs["height"] = height
-        # pipe = self.txt2img_pipe
-        pipe2 = self.txt2img_pipe2
+        pipe = self.txt2img_pipe
 
-        # pipe.scheduler = SCHEDULERS[scheduler].from_config(pipe.scheduler.config)
-        pipe2.scheduler = SCHEDULERS[scheduler].from_config(pipe2.scheduler.config)
+
+        pipe.scheduler = SCHEDULERS[scheduler].from_config(pipe.scheduler.config)
         generator = torch.Generator("cuda").manual_seed(seed)
 
-        # common_args = {
-        #     "prompt": [prompt] * num_outputs,
-        #     "negative_prompt": [negative_prompt] * num_outputs,
-        #     "guidance_scale": guidance_scale,
-        #     "generator": generator,
-        #     "num_inference_steps": num_inference_steps,
-        # }
-
-        common_args2 = {
-            "prompt": [prompt2] * num_outputs,
+        common_args = {
+            "prompt": [prompt] * num_outputs,
             "negative_prompt": [negative_prompt] * num_outputs,
             "guidance_scale": guidance_scale,
             "generator": generator,
             "num_inference_steps": num_inference_steps,
         }
 
-        print("Is LoRA: ", self.is_lora)
         if self.is_lora:
             sdxl_kwargs["cross_attention_kwargs"] = {"scale": lora_scale}
 
-        output_paths = []
 
-        output2 = pipe2(**common_args2, **sdxl_kwargs)
-        
-        for i, image in enumerate(output2.images):
-            output_path = f"/tmp/out-1{i}.png"
+        output = pipe(**common_args, **sdxl_kwargs)
+
+        output_paths = []
+        for i, image in enumerate(output.images):
+            output_path = f"/tmp/out-{i}.png"
             image.save(output_path)
             output_paths.append(Path(output_path))
-
-        # output = pipe(**common_args, **sdxl_kwargs)
-
-        # for i, image in enumerate(output.images):
-        #     output_path = f"/tmp/out-0{i}.png"
-        #     image.save(output_path)
-        #     print("Saved image to: ", output_path)
-        #     output_paths.append(Path(output_path))
-        
         return output_paths
