@@ -184,10 +184,17 @@ class Predictor(BasePredictor):
         )
 
         self.is_lora = False
-        self.txt2img_pipe.load_lora_weights("./trained-model-luk", weight_name="lora.safetensors", adapter_name="LUK")
-        self.txt2img_pipe.load_lora_weights("./trained-model-tok", weight_name="lora.safetensors", adapter_name="TOK")
+
+        if not os.path.exists("./trained-model-luk"):
+          download_weights("https://replicate.delivery/pbxt/K8l70F8kIPrIy6GDcoMok2k2C7EJSeWL3kQ4V52LKhsBqhe8/trained_model_luk.tar", "./trained-model-luk")
+
+        if not os.path.exists("./trained-model-tok"):
+          download_weights("https://replicate.delivery/pbxt/K7ku1HCBJMUchwXERHHSMi4Vkm3W75Qox5Rt5nKG7kGYmgkf/trained_model.tar", "trained-model-tok")
 
         self.load_trained_weights("./trained-model-luk", self.txt2img_pipe2)
+
+        self.txt2img_pipe.load_lora_weights("./trained-model-luk", weight_name="lora.safetensors", adapter_name="LUK")
+        self.txt2img_pipe.load_lora_weights("./trained-model-tok", weight_name="lora.safetensors", adapter_name="TOK")
 
         self.txt2img_pipe.to("cuda")
         self.txt2img_pipe2.to("cuda")
@@ -345,11 +352,11 @@ class Predictor(BasePredictor):
 
         prompt2 = prompt
 
-        # if self.tuned_model:
-        #     # consistency with fine-tuning API
-        #     for k, v in self.token_map.items():
-        #         prompt = prompt.replace(k, v)
-        print(f"Prompt: {prompt}")
+        if self.tuned_model:
+            # consistency with fine-tuning API
+            for k, v in self.token_map.items():
+                prompt2 = prompt2.replace(k, v)
+        print(f"Prompt: {prompt2}")
 
         sdxl_kwargs["width"] = width
         sdxl_kwargs["height"] = height
