@@ -191,13 +191,13 @@ class Predictor(BasePredictor):
         if not os.path.exists("./trained-model-tok"):
           download_weights("https://replicate.delivery/pbxt/K7ku1HCBJMUchwXERHHSMi4Vkm3W75Qox5Rt5nKG7kGYmgkf/trained_model.tar", "trained-model-tok")
 
-        self.load_trained_weights("./trained-model-luk", self.txt2img_pipe2)
+        # self.load_trained_weights("./trained-model-luk", self.txt2img_pipe2)
 
         self.txt2img_pipe.load_lora_weights("./trained-model-luk", weight_name="lora.safetensors", adapter_name="LUK")
         self.txt2img_pipe.load_lora_weights("./trained-model-tok", weight_name="lora.safetensors", adapter_name="TOK")
 
         self.txt2img_pipe.to("cuda")
-        self.txt2img_pipe2.to("cuda")
+        # self.txt2img_pipe2.to("cuda")
 
         # print("Loading SDXL img2img pipeline...")
         # self.img2img_pipe = StableDiffusionXLImg2ImgPipeline(
@@ -350,21 +350,21 @@ class Predictor(BasePredictor):
         sdxl_kwargs = {}
         print("tuned_model: ", self.tuned_model)
 
-        prompt2 = prompt
+        # prompt2 = prompt
 
-        if self.tuned_model:
-            # consistency with fine-tuning API
-            for k, v in self.token_map.items():
-                prompt2 = prompt2.replace(k, v)
-        print(f"Prompt: {prompt2}")
+        # if self.tuned_model:
+        #     # consistency with fine-tuning API
+        #     for k, v in self.token_map.items():
+        #         prompt2 = prompt2.replace(k, v)
+        print(f"Prompt: {prompt}")
 
         sdxl_kwargs["width"] = width
         sdxl_kwargs["height"] = height
         pipe = self.txt2img_pipe
-        pipe2 = self.txt2img_pipe2
+        # pipe2 = self.txt2img_pipe2
 
         pipe.scheduler = SCHEDULERS[scheduler].from_config(pipe.scheduler.config)
-        pipe2.scheduler = SCHEDULERS[scheduler].from_config(pipe2.scheduler.config)
+        # pipe2.scheduler = SCHEDULERS[scheduler].from_config(pipe2.scheduler.config)
         generator = torch.Generator("cuda").manual_seed(seed)
 
         common_args = {
@@ -375,26 +375,27 @@ class Predictor(BasePredictor):
             "num_inference_steps": num_inference_steps,
         }
 
-        common_args2 = {
-            "prompt": [prompt2] * num_outputs,
-            "negative_prompt": [negative_prompt] * num_outputs,
-            "guidance_scale": guidance_scale,
-            "generator": generator,
-            "num_inference_steps": num_inference_steps,
-        }
+        # common_args2 = {
+        #     "prompt": [prompt2] * num_outputs,
+        #     "negative_prompt": [negative_prompt] * num_outputs,
+        #     "guidance_scale": guidance_scale,
+        #     "generator": generator,
+        #     "num_inference_steps": num_inference_steps,
+        # }
 
         print("Is LoRA: ", self.is_lora)
         if self.is_lora:
             sdxl_kwargs["cross_attention_kwargs"] = {"scale": lora_scale}
 
-        output2 = pipe2(**common_args2, **sdxl_kwargs)
-        
         output_paths = []
-        for i, image in enumerate(output2.images):
-            output_path = f"/tmp/out-1{i}.png"
-            image.save(output_path)
-            print("Saved image to: ", output_path)
-            output_paths.append(Path(output_path))
+
+        # output2 = pipe2(**common_args2, **sdxl_kwargs)
+        
+        # for i, image in enumerate(output2.images):
+        #     output_path = f"/tmp/out-1{i}.png"
+        #     image.save(output_path)
+        #     print("Saved image to: ", output_path)
+        #     output_paths.append(Path(output_path))
 
         output = pipe(**common_args, **sdxl_kwargs)
 
