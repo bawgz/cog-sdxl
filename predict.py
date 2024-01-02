@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import torch
 from cog import BasePredictor, Input, Path
@@ -7,6 +7,9 @@ from diffusers import DiffusionPipeline
 
 
 class Predictor(BasePredictor):
+    def setup(self, weights: Optional[Path] = None):
+        print("weights: ", weights)
+
     @torch.inference_mode()
     def predict(
         self,
