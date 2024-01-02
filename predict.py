@@ -177,7 +177,7 @@ class Predictor(BasePredictor):
             use_safetensors=True,
             variant="fp16",
         )
-        self.is_lora = False
+        self.is_lora = True
         self.txt2img_pipe.load_lora_weights("./trained-model", weight_name="lora.safetensors", adapter_name="LUK")
         # self.load_trained_weights(weights, self.txt2img_pipe)
 
@@ -395,6 +395,7 @@ class Predictor(BasePredictor):
         }
 
         if self.is_lora:
+            print("Setting LoRA scale to ", lora_scale)
             sdxl_kwargs["cross_attention_kwargs"] = {"scale": lora_scale}
 
         output = pipe(**common_args, **sdxl_kwargs)
