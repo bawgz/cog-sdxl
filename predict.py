@@ -73,7 +73,7 @@ class Predictor(BasePredictor):
 
         # weights can be a URLPath, which behaves in unexpected ways
         if weights is None:
-            weights = "./trained-model-luk"
+            weights = "https://replicate.delivery/pbxt/K8l70F8kIPrIy6GDcoMok2k2C7EJSeWL3kQ4V52LKhsBqhe8/trained_model_luk.tar"
             print("Weights is None, setting to ", weights)
         else:
             print("Weights is not None, setting to ", str(weights))
@@ -185,13 +185,13 @@ class Predictor(BasePredictor):
 
         self.is_lora = False
 
+        self.load_trained_weights("https://replicate.delivery/pbxt/K8l70F8kIPrIy6GDcoMok2k2C7EJSeWL3kQ4V52LKhsBqhe8/trained_model_luk.tar", self.txt2img_pipe2)
+
         if not os.path.exists("./trained-model-luk"):
           download_weights("https://replicate.delivery/pbxt/K8l70F8kIPrIy6GDcoMok2k2C7EJSeWL3kQ4V52LKhsBqhe8/trained_model_luk.tar", "./trained-model-luk")
 
         # if not os.path.exists("./trained-model-tok"):
         #   download_weights("https://replicate.delivery/pbxt/K7ku1HCBJMUchwXERHHSMi4Vkm3W75Qox5Rt5nKG7kGYmgkf/trained_model.tar", "trained-model-tok")
-
-        self.load_trained_weights("./trained-model-luk", self.txt2img_pipe2)
 
         # self.txt2img_pipe.load_lora_weights("./trained-model-luk", weight_name="lora.safetensors", adapter_name="LUK")
         # self.txt2img_pipe.load_lora_weights("./trained-model-tok", weight_name="lora.safetensors", adapter_name="TOK")
