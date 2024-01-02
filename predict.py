@@ -34,9 +34,9 @@ class Predictor(BasePredictor):
         pipe_id = "stabilityai/stable-diffusion-xl-base-1.0"
         pipe = DiffusionPipeline.from_pretrained(pipe_id, torch_dtype=torch.float16).to("cuda")
 
-        pipe.load_lora_weights("CiroN2022/toy-face", weight_name="toy_face_sdxl.safetensors", adapter_name="toy")
+        # pipe.load_lora_weights("CiroN2022/toy-face", weight_name="toy_face_sdxl.safetensors", adapter_name="toy")
 
-        output = pipe(prompt, num_inference_steps=num_inference_steps, cross_attention_kwargs={"scale": lora_scale}, generator=torch.manual_seed(0))
+        output = pipe(prompt, num_inference_steps=num_inference_steps, generator=torch.manual_seed(0))
 
         output_paths = []
         for i, image in enumerate(output.images):
