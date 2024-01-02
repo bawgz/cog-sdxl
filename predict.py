@@ -41,6 +41,7 @@ REFINER_URL = (
     "https://weights.replicate.delivery/default/sdxl/refiner-no-vae-no-encoder-1.0.tar"
 )
 SAFETY_URL = "https://weights.replicate.delivery/default/sdxl/safety-1.0.tar"
+LORA_TOK_URL = "https://replicate.delivery/pbxt/K7ku1HCBJMUchwXERHHSMi4Vkm3W75Qox5Rt5nKG7kGYmgkf/trained_model.tar"
 
 
 class KarrasDPM:
@@ -73,7 +74,7 @@ class Predictor(BasePredictor):
 
         # weights can be a URLPath, which behaves in unexpected ways
         if weights is None:
-            weights = "https://replicate.delivery/pbxt/K8l70F8kIPrIy6GDcoMok2k2C7EJSeWL3kQ4V52LKhsBqhe8/trained_model_luk.tar"
+            weights = LORA_TOK_URL
             print("Weights is None, setting to ", weights)
         else:
             print("Weights is not None, setting to ", str(weights))
@@ -189,7 +190,7 @@ class Predictor(BasePredictor):
             variant="fp16",
         )
         self.is_lora = False
-        self.load_trained_weights("https://replicate.delivery/pbxt/K8l70F8kIPrIy6GDcoMok2k2C7EJSeWL3kQ4V52LKhsBqhe8/trained_model_luk.tar", self.txt2img_pipe)
+        self.load_trained_weights(LORA_TOK_URL, self.txt2img_pipe)
 
 
         self.txt2img_pipe.to("cuda")
