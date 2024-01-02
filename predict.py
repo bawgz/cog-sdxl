@@ -88,7 +88,7 @@ class Predictor(BasePredictor):
 
         # load UNET
         print("Loading fine-tuned model")
-        self.is_lora = False
+        self.is_lora = True
 
         print("Loading Unet LoRA")
 
