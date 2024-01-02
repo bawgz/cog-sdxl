@@ -363,10 +363,10 @@ class Predictor(BasePredictor):
 
         sdxl_kwargs = {}
         print("tuned_model: ", self.tuned_model)
-        if self.tuned_model:
-            # consistency with fine-tuning API
-            for k, v in self.token_map.items():
-                prompt = prompt.replace(k, v)
+        # if self.tuned_model:
+        #     # consistency with fine-tuning API
+        #     for k, v in self.token_map.items():
+        #         prompt = prompt.replace(k, v)
         print(f"Prompt: {prompt}")
         if image and mask:
             print("inpainting mode")
