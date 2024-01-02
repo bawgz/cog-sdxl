@@ -88,7 +88,7 @@ class Predictor(BasePredictor):
 
         # load UNET
         print("Loading fine-tuned model")
-        self.is_lora = False
+        self.is_lora = True
 
         print("Loading Unet LoRA")
 
@@ -143,14 +143,12 @@ class Predictor(BasePredictor):
             params = json.load(f)
         self.token_map = params
 
-        print("Setting tuned_model to True")
         self.tuned_model = True
 
     def setup(self, weights: Optional[Path] = None):
         """Load the model into memory to make running multiple predictions efficient"""
 
         start = time.time()
-        print("Setting up predictor...")
         self.tuned_model = False
         self.tuned_weights = None
 
@@ -169,12 +167,12 @@ class Predictor(BasePredictor):
             download_weights(SDXL_URL, SDXL_MODEL_CACHE)
 
         print("Loading sdxl txt2img pipeline...")
-        self.txt2img_pipe = DiffusionPipeline.from_pretrained(
-            SDXL_MODEL_CACHE,
-            torch_dtype=torch.float16,
-            use_safetensors=True,
-            variant="fp16",
-        )
+        # self.txt2img_pipe = DiffusionPipeline.from_pretrained(
+        #     SDXL_MODEL_CACHE,
+        #     torch_dtype=torch.float16,
+        #     use_safetensors=True,
+        #     variant="fp16",
+        # )
 
         self.txt2img_pipe2 = DiffusionPipeline.from_pretrained(
             SDXL_MODEL_CACHE,
@@ -229,19 +227,19 @@ class Predictor(BasePredictor):
         # FIXME(ja): if the answer to above is use VAE/Text_Encoder_2 from fine-tune
         #            what does this imply about lora + refiner? does the refiner need to know about
 
-        if not os.path.exists(REFINER_MODEL_CACHE):
-            download_weights(REFINER_URL, REFINER_MODEL_CACHE)
+        # if not os.path.exists(REFINER_MODEL_CACHE):
+        #     download_weights(REFINER_URL, REFINER_MODEL_CACHE)
 
-        print("Loading refiner pipeline...")
-        self.refiner = DiffusionPipeline.from_pretrained(
-            REFINER_MODEL_CACHE,
-            text_encoder_2=self.txt2img_pipe.text_encoder_2,
-            vae=self.txt2img_pipe.vae,
-            torch_dtype=torch.float16,
-            use_safetensors=True,
-            variant="fp16",
-        )
-        self.refiner.to("cuda")
+        # print("Loading refiner pipeline...")
+        # self.refiner = DiffusionPipeline.from_pretrained(
+        #     REFINER_MODEL_CACHE,
+        #     text_encoder_2=self.txt2img_pipe.text_encoder_2,
+        #     vae=self.txt2img_pipe.vae,
+        #     torch_dtype=torch.float16,
+        #     use_safetensors=True,
+        #     variant="fp16",
+        # )
+        # self.refiner.to("cuda")
         print("setup took: ", time.time() - start)
         # self.txt2img_pipe.__class__.encode_prompt = new_encode_prompt
 
@@ -334,21 +332,20 @@ class Predictor(BasePredictor):
         #     default=False
         # )
     ) -> List[Path]:
-        print("Running prediction...")
         """Run a single prediction on the model."""
         if seed is None:
             seed = int.from_bytes(os.urandom(2), "big")
         print(f"Using seed: {seed}")
 
-        print("setting addapters")
-        self.txt2img_pipe.set_adapters(["LUK", "TOK"], adapter_weights=[lora_scale, lora_scale2])
+        # print("setting adapters")
+        # self.txt2img_pipe.set_adapters(["LUK", "TOK"], adapter_weights=[lora_scale, lora_scale2])
         
         # OOMs can leave vae in bad state
-        if self.txt2img_pipe.vae.dtype == torch.float32:
-            self.txt2img_pipe.vae.to(dtype=torch.float16)
+        if self.txt2img_pipe2.vae.dtype == torch.float32:
+            print("resetting vae to float16")
+            self.txt2img_pipe2.vae.to(dtype=torch.float16)
 
         sdxl_kwargs = {}
-        print("tuned_model: ", self.tuned_model)
 
         prompt2 = prompt
 
@@ -396,7 +393,6 @@ class Predictor(BasePredictor):
         for i, image in enumerate(output2.images):
             output_path = f"/tmp/out-1{i}.png"
             image.save(output_path)
-            print("Saved image to: ", output_path)
             output_paths.append(Path(output_path))
 
         # output = pipe(**common_args, **sdxl_kwargs)
