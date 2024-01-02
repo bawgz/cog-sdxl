@@ -17,7 +17,7 @@ build:
     - "transformers"
     - "accelerate"
     - "pandas"
-    - "torchvisio"
+    - "torchvision"
     - "numpy"
     - "fire"
     - "opencv-python"
