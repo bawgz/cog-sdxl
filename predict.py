@@ -193,8 +193,8 @@ class Predictor(BasePredictor):
             variant="fp16",
         )
         self.is_lora = False
-        if weights or os.path.exists("./trained-model"):
-            self.load_trained_weights(weights, self.txt2img_pipe)
+        if os.path.exists("./trained-model"):
+            # self.load_trained_weights(weights, self.txt2img_pipe)
             self.txt2img_pipe.load_lora_weights("./trained-model", weight_name="lora.safetensors", adapter_name="TOK")
 
         self.txt2img_pipe.to("cuda")
