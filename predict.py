@@ -188,16 +188,16 @@ class Predictor(BasePredictor):
         if not os.path.exists("./trained-model-luk"):
           download_weights("https://replicate.delivery/pbxt/K8l70F8kIPrIy6GDcoMok2k2C7EJSeWL3kQ4V52LKhsBqhe8/trained_model_luk.tar", "./trained-model-luk")
 
-        if not os.path.exists("./trained-model-tok"):
-          download_weights("https://replicate.delivery/pbxt/K7ku1HCBJMUchwXERHHSMi4Vkm3W75Qox5Rt5nKG7kGYmgkf/trained_model.tar", "trained-model-tok")
+        # if not os.path.exists("./trained-model-tok"):
+        #   download_weights("https://replicate.delivery/pbxt/K7ku1HCBJMUchwXERHHSMi4Vkm3W75Qox5Rt5nKG7kGYmgkf/trained_model.tar", "trained-model-tok")
 
-        # self.load_trained_weights("./trained-model-luk", self.txt2img_pipe2)
+        self.load_trained_weights("./trained-model-luk", self.txt2img_pipe2)
 
-        self.txt2img_pipe.load_lora_weights("./trained-model-luk", weight_name="lora.safetensors", adapter_name="LUK")
-        self.txt2img_pipe.load_lora_weights("./trained-model-tok", weight_name="lora.safetensors", adapter_name="TOK")
+        # self.txt2img_pipe.load_lora_weights("./trained-model-luk", weight_name="lora.safetensors", adapter_name="LUK")
+        # self.txt2img_pipe.load_lora_weights("./trained-model-tok", weight_name="lora.safetensors", adapter_name="TOK")
 
-        self.txt2img_pipe.to("cuda")
-        # self.txt2img_pipe2.to("cuda")
+        # self.txt2img_pipe.to("cuda")
+        self.txt2img_pipe2.to("cuda")
 
         # print("Loading SDXL img2img pipeline...")
         # self.img2img_pipe = StableDiffusionXLImg2ImgPipeline(
@@ -350,38 +350,40 @@ class Predictor(BasePredictor):
         sdxl_kwargs = {}
         print("tuned_model: ", self.tuned_model)
 
-        # prompt2 = prompt
+        prompt2 = prompt
 
-        # if self.tuned_model:
-        #     # consistency with fine-tuning API
-        #     for k, v in self.token_map.items():
-        #         prompt2 = prompt2.replace(k, v)
-        print(f"Prompt: {prompt}")
+        if self.tuned_model:
+            # consistency with fine-tuning API
+            for k, v in self.token_map.items():
+                prompt2 = prompt2.replace(k, v)
+
+        print("prompt2: ", prompt2)
+        # print(f"Prompt: {prompt}")
 
         sdxl_kwargs["width"] = width
         sdxl_kwargs["height"] = height
-        pipe = self.txt2img_pipe
-        # pipe2 = self.txt2img_pipe2
+        # pipe = self.txt2img_pipe
+        pipe2 = self.txt2img_pipe2
 
-        pipe.scheduler = SCHEDULERS[scheduler].from_config(pipe.scheduler.config)
-        # pipe2.scheduler = SCHEDULERS[scheduler].from_config(pipe2.scheduler.config)
+        # pipe.scheduler = SCHEDULERS[scheduler].from_config(pipe.scheduler.config)
+        pipe2.scheduler = SCHEDULERS[scheduler].from_config(pipe2.scheduler.config)
         generator = torch.Generator("cuda").manual_seed(seed)
 
-        common_args = {
-            "prompt": [prompt] * num_outputs,
-            "negative_prompt": [negative_prompt] * num_outputs,
-            "guidance_scale": guidance_scale,
-            "generator": generator,
-            "num_inference_steps": num_inference_steps,
-        }
-
-        # common_args2 = {
-        #     "prompt": [prompt2] * num_outputs,
+        # common_args = {
+        #     "prompt": [prompt] * num_outputs,
         #     "negative_prompt": [negative_prompt] * num_outputs,
         #     "guidance_scale": guidance_scale,
         #     "generator": generator,
         #     "num_inference_steps": num_inference_steps,
         # }
+
+        common_args2 = {
+            "prompt": [prompt2] * num_outputs,
+            "negative_prompt": [negative_prompt] * num_outputs,
+            "guidance_scale": guidance_scale,
+            "generator": generator,
+            "num_inference_steps": num_inference_steps,
+        }
 
         print("Is LoRA: ", self.is_lora)
         if self.is_lora:
@@ -389,22 +391,20 @@ class Predictor(BasePredictor):
 
         output_paths = []
 
-        # output2 = pipe2(**common_args2, **sdxl_kwargs)
+        output2 = pipe2(**common_args2, **sdxl_kwargs)
         
-        # for i, image in enumerate(output2.images):
-        #     output_path = f"/tmp/out-1{i}.png"
-        #     image.save(output_path)
-        #     print("Saved image to: ", output_path)
-        #     output_paths.append(Path(output_path))
-
-        output = pipe(**common_args, **sdxl_kwargs)
-
-        for i, image in enumerate(output.images):
-            output_path = f"/tmp/out-0{i}.png"
+        for i, image in enumerate(output2.images):
+            output_path = f"/tmp/out-1{i}.png"
             image.save(output_path)
             print("Saved image to: ", output_path)
             output_paths.append(Path(output_path))
-        
-        print("test")
 
+        # output = pipe(**common_args, **sdxl_kwargs)
+
+        # for i, image in enumerate(output.images):
+        #     output_path = f"/tmp/out-0{i}.png"
+        #     image.save(output_path)
+        #     print("Saved image to: ", output_path)
+        #     output_paths.append(Path(output_path))
+        
         return output_paths
