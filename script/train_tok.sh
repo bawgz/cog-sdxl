@@ -1,1 +1,1 @@
-sudo cog train -i input_images="https://replicate.delivery/pbxt/K5GU1D1u6jwHw8wVni1MLAtuH1BaPtdDDztVWj4nqVw3Vf0Y/data.zip" -i lora_lr=2e-4 -i caption_prefix="A photo of TOK sunglasses, "
+sudo cog train -i input_images="https://replicate.delivery/pbxt/K5GU1D1u6jwHw8wVni1MLAtuH1BaPtdDDztVWj4nqVw3Vf0Y/data.zip" -i lora_lr="2e-4" -i caption_prefix="A photo of TOK sunglasses, "
