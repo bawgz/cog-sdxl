@@ -36,7 +36,7 @@ class Predictor(BasePredictor):
 
         pipe.load_lora_weights("./trained-model/", weight_name="lora.safetensors", adapter_name="LUK")
 
-        output = pipe(prompt, num_inference_steps=num_inference_steps, generator=torch.manual_seed(0))
+        output = pipe(prompt, num_inference_steps=num_inference_steps, cross_attention_kwargs={"scale": lora_scale}, generator=torch.manual_seed(0))
 
         output_paths = []
         for i, image in enumerate(output.images):
