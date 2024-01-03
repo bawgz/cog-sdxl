@@ -60,7 +60,7 @@ class Predictor(BasePredictor):
 
         self.pipe.set_adapters(["LUK", "TOK"], adapter_weights=[lora_scale, lora_scale2])
 
-        output = self.pipe(prompt, num_inference_steps=num_inference_steps, generator=torch.manual_seed(0))
+        output = self.pipe(prompt, num_inference_steps=num_inference_steps, cross_attention_kwargs={"scale": 1.0}, generator=torch.manual_seed(0))
 
         output_paths = []
         for i, image in enumerate(output.images):
