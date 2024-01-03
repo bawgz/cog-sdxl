@@ -38,7 +38,7 @@ class Predictor(BasePredictor):
         print(f"Prompt: {prompt}")
 
         pipe_id = "stabilityai/stable-diffusion-xl-base-1.0"
-        pipe = DiffusionPipeline.from_pretrained(pipe_id, torch_dtype=torch.float16).to("cuda")
+        pipe = DiffusionPipeline.from_pretrained("./sdxl-cache", torch_dtype=torch.float16).to("cuda")
 
         pipe.load_lora_weights("./trained-model/", weight_name="lora.safetensors", adapter_name="LUK")
         pipe.load_lora_weights("./trained-model-tok/", weight_name="lora.safetensors", adapter_name="TOK")

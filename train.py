@@ -130,7 +130,6 @@ def train(
     running_tok_cnt = 0
     all_token_lists = []
 
-    caption_prefix = caption_prefix.replace("TOK", token_string)
     for token in inserting_list_tokens:
         n_tok = int(token.split(":")[1])
 
