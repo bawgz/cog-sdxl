@@ -165,6 +165,7 @@ class Predictor(BasePredictor):
         if refine in ["expert_ensemble_refiner", "base_image_refiner"]:
             refiner_kwargs = {
                 "image": output.images,
+                "cross_attention_kwargs": {"scale": lora_scale}, 
             }
 
             if refine == "expert_ensemble_refiner":
