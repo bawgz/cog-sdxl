@@ -54,7 +54,6 @@ class Predictor(BasePredictor):
         self.pipe = DiffusionPipeline.from_pretrained("./sdxl-cache", torch_dtype=torch.float16).to("cuda")
 
         self.pipe.load_lora_weights("./trained-model-luk/", weight_name="lora.safetensors", adapter_name="LUK")
-        self.pipe.load_lora_weights("./trained-model-tok/", weight_name="lora.safetensors", adapter_name="TOK")
 
         # pipe.load_textual_inversion("./trained-model-tok/", weight_name="embeddings.pti", token="TOK")
 
@@ -78,6 +77,7 @@ class Predictor(BasePredictor):
         )
 
         # FIXME: should I load lora weights to the refiner?
+        # self.refiner.load_lora_weights("./trained-model-luk/", weight_name="lora.safetensors", adapter_name="LUK")
 
         self.refiner.to("cuda")
 
@@ -135,7 +135,7 @@ class Predictor(BasePredictor):
 
         print(f"Prompt: {prompt}")
 
-        self.pipe.set_adapters(["LUK", "TOK"], adapter_weights=[lora_scale, lora_scale2])
+        # self.pipe.set_adapters(["LUK", "TOK"], adapter_weights=[lora_scale, lora_scale2])
 
         sdxl_kwargs = {}
 
@@ -145,7 +145,7 @@ class Predictor(BasePredictor):
         elif refine == "base_image_refiner":
             sdxl_kwargs["output_type"] = "latent"
 
-        sdxl_kwargs["cross_attention_kwargs"] = {"scale": 1.0}
+        sdxl_kwargs["cross_attention_kwargs"] = {"scale": lora_scale}
 
         common_args = {
             "prompt": prompt,
