@@ -1,14 +1,35 @@
 from typing import List, Optional
+import os
+import time
+import subprocess
 
 import torch
 from cog import BasePredictor, Input, Path
 from diffusers import DiffusionPipeline
 
+SDXL_MODEL_CACHE = "./sdxl-cache"
+SDXL_URL = "https://weights.replicate.delivery/default/sdxl/sdxl-vae-upcast-fix.tar"
 
+def download_weights(url, dest):
+    start = time.time()
+    print("downloading url: ", url)
+    print("downloading to: ", dest)
+    subprocess.check_call(["pget", "-x", url, dest], close_fds=False)
+    print("downloading took: ", time.time() - start)
 
 class Predictor(BasePredictor):
     def setup(self, weights: Optional[Path] = None):
         print("weights: ", weights)
+        
+        if not os.path.exists(SDXL_MODEL_CACHE):
+            download_weights(SDXL_URL, SDXL_MODEL_CACHE)
+            
+        self.pipe = DiffusionPipeline.from_pretrained("./sdxl-cache", torch_dtype=torch.float16).to("cuda")
+
+        self.pipe.load_lora_weights("./trained-model/", weight_name="lora.safetensors", adapter_name="LUK")
+        self.pipe.load_lora_weights("./trained-model-tok/", weight_name="lora.safetensors", adapter_name="TOK")
+
+        # pipe.load_textual_inversion("./trained-model-tok/", weight_name="embeddings.pti", token="TOK")
 
     @torch.inference_mode()
     def predict(
@@ -37,17 +58,9 @@ class Predictor(BasePredictor):
 
         print(f"Prompt: {prompt}")
 
-        pipe_id = "stabilityai/stable-diffusion-xl-base-1.0"
-        pipe = DiffusionPipeline.from_pretrained("./sdxl-cache", torch_dtype=torch.float16).to("cuda")
+        self.pipe.set_adapters(["LUK", "TOK"], adapter_weights=[lora_scale, lora_scale2])
 
-        pipe.load_lora_weights("./trained-model/", weight_name="lora.safetensors", adapter_name="LUK")
-        pipe.load_lora_weights("./trained-model-tok/", weight_name="lora.safetensors", adapter_name="TOK")
-
-        # pipe.load_textual_inversion("./trained-model-tok/", weight_name="embeddings.pti", token="TOK")
-
-        pipe.set_adapters(["LUK", "TOK"], adapter_weights=[lora_scale, lora_scale2])
-
-        output = pipe(prompt, num_inference_steps=num_inference_steps, generator=torch.manual_seed(0))
+        output = self.pipe(prompt, num_inference_steps=num_inference_steps, generator=torch.manual_seed(0))
 
         output_paths = []
         for i, image in enumerate(output.images):
