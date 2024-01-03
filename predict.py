@@ -76,9 +76,9 @@ class Predictor(BasePredictor):
             variant="fp16",
         )
 
-        # FIXME: should I load lora weights to the refiner?
-        print("setting refiner adapters")
-        self.refiner.load_lora_weights("./trained-model-luk/", weight_name="lora.safetensors", adapter_name="LUK")
+        # FIXME: should I load lora weights to the refiner? Below does not work
+        # print("setting refiner adapters")
+        # self.refiner.load_lora_weights("./trained-model-luk/", weight_name="lora.safetensors", adapter_name="LUK")
 
         self.refiner.to("cuda")
 
