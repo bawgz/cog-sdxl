@@ -26,7 +26,7 @@ class Predictor(BasePredictor):
             
         self.pipe = DiffusionPipeline.from_pretrained("./sdxl-cache", torch_dtype=torch.float16).to("cuda")
 
-        self.pipe.load_lora_weights("./trained-model/", weight_name="lora.safetensors", adapter_name="LUK")
+        self.pipe.load_lora_weights("./trained-model-luk/", weight_name="lora.safetensors", adapter_name="LUK")
         self.pipe.load_lora_weights("./trained-model-tok/", weight_name="lora.safetensors", adapter_name="TOK")
 
         # pipe.load_textual_inversion("./trained-model-tok/", weight_name="embeddings.pti", token="TOK")
