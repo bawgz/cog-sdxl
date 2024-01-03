@@ -25,7 +25,13 @@ class Predictor(BasePredictor):
             ge=0.0,
             le=1.0,
             default=0.6,
-        )
+        ),
+        lora_scale2: float = Input(
+            description="LoRA additive scale. Only applicable on trained models.",
+            ge=0.0,
+            le=1.0,
+            default=0.6,
+        ),
     ) -> List[Path]:
         """Run a single prediction on the model."""
 
@@ -35,6 +41,9 @@ class Predictor(BasePredictor):
         pipe = DiffusionPipeline.from_pretrained(pipe_id, torch_dtype=torch.float16).to("cuda")
 
         pipe.load_lora_weights("./trained-model/", weight_name="lora.safetensors", adapter_name="LUK")
+        pipe.load_lora_weights("./trained-model-tok/", weight_name="lora.safetensors", adapter_name="TOK")
+
+        pipe.set_adapters(["LUK", "TOK"], adapter_weights=[lora_scale, lora_scale2])
 
         output = pipe(prompt, num_inference_steps=num_inference_steps, cross_attention_kwargs={"scale": lora_scale}, generator=torch.manual_seed(0))
 
