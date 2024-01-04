@@ -1,1 +1,1 @@
-sudo cog predict -i prompt="a photo of TOK"
+udo cog predict -i prompt="a photo of LUK man" -i lora_scale=0.9 -i num_inference_steps=130 -i seed=0 -i refine=expert_ensemble_refiner -i high_noise_frac=0.9
