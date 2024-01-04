@@ -160,29 +160,29 @@ class Predictor(BasePredictor):
 
         self.txt2img_pipe1.to("cuda")
 
-        self.txt2img_pipe2 = DiffusionPipeline.from_pretrained(
-            SDXL_MODEL_CACHE,
-            torch_dtype=torch.float16,
-            use_safetensors=True,
-            variant="fp16",
-        )
-        self.is_lora = True
-        # self.txt2img_pipe.load_lora_weights("./trained-model", weight_name="lora.safetensors", adapter_name="LUK")
-        self.load_trained_weights(None, self.txt2img_pipe2, 400)
+        # self.txt2img_pipe2 = DiffusionPipeline.from_pretrained(
+        #     SDXL_MODEL_CACHE,
+        #     torch_dtype=torch.float16,
+        #     use_safetensors=True,
+        #     variant="fp16",
+        # )
+        # self.is_lora = True
+        # # self.txt2img_pipe.load_lora_weights("./trained-model", weight_name="lora.safetensors", adapter_name="LUK")
+        # self.load_trained_weights(None, self.txt2img_pipe2, 400)
 
-        self.txt2img_pipe2.to("cuda")
+        # self.txt2img_pipe2.to("cuda")
 
-        self.txt2img_pipe3 = DiffusionPipeline.from_pretrained(
-            SDXL_MODEL_CACHE,
-            torch_dtype=torch.float16,
-            use_safetensors=True,
-            variant="fp16",
-        )
-        self.is_lora = True
-        # self.txt2img_pipe.load_lora_weights("./trained-model", weight_name="lora.safetensors", adapter_name="LUK")
-        self.load_trained_weights(None, self.txt2img_pipe3, 600)
+        # self.txt2img_pipe3 = DiffusionPipeline.from_pretrained(
+        #     SDXL_MODEL_CACHE,
+        #     torch_dtype=torch.float16,
+        #     use_safetensors=True,
+        #     variant="fp16",
+        # )
+        # self.is_lora = True
+        # # self.txt2img_pipe.load_lora_weights("./trained-model", weight_name="lora.safetensors", adapter_name="LUK")
+        # self.load_trained_weights(None, self.txt2img_pipe3, 600)
 
-        self.txt2img_pipe3.to("cuda")
+        # self.txt2img_pipe3.to("cuda")
 
         self.txt2img_pipe4 = DiffusionPipeline.from_pretrained(
             SDXL_MODEL_CACHE,
@@ -196,41 +196,41 @@ class Predictor(BasePredictor):
 
         self.txt2img_pipe4.to("cuda")
 
-        self.txt2img_pipe5 = DiffusionPipeline.from_pretrained(
-            SDXL_MODEL_CACHE,
-            torch_dtype=torch.float16,
-            use_safetensors=True,
-            variant="fp16",
-        )
-        self.is_lora = True
-        # self.txt2img_pipe.load_lora_weights("./trained-model", weight_name="lora.safetensors", adapter_name="LUK")
-        self.load_trained_weights(None, self.txt2img_pipe5, 1000)
+        # self.txt2img_pipe5 = DiffusionPipeline.from_pretrained(
+        #     SDXL_MODEL_CACHE,
+        #     torch_dtype=torch.float16,
+        #     use_safetensors=True,
+        #     variant="fp16",
+        # )
+        # self.is_lora = True
+        # # self.txt2img_pipe.load_lora_weights("./trained-model", weight_name="lora.safetensors", adapter_name="LUK")
+        # self.load_trained_weights(None, self.txt2img_pipe5, 1000)
 
-        self.txt2img_pipe5.to("cuda")
+        # self.txt2img_pipe5.to("cuda")
 
-        self.txt2img_pipe6 = DiffusionPipeline.from_pretrained(
-            SDXL_MODEL_CACHE,
-            torch_dtype=torch.float16,
-            use_safetensors=True,
-            variant="fp16",
-        )
-        self.is_lora = True
-        # self.txt2img_pipe.load_lora_weights("./trained-model", weight_name="lora.safetensors", adapter_name="LUK")
-        self.load_trained_weights(None, self.txt2img_pipe6, 1200)
+        # self.txt2img_pipe6 = DiffusionPipeline.from_pretrained(
+        #     SDXL_MODEL_CACHE,
+        #     torch_dtype=torch.float16,
+        #     use_safetensors=True,
+        #     variant="fp16",
+        # )
+        # self.is_lora = True
+        # # self.txt2img_pipe.load_lora_weights("./trained-model", weight_name="lora.safetensors", adapter_name="LUK")
+        # self.load_trained_weights(None, self.txt2img_pipe6, 1200)
 
-        self.txt2img_pipe6.to("cuda")
+        # self.txt2img_pipe6.to("cuda")
 
-        self.txt2img_pipe7 = DiffusionPipeline.from_pretrained(
-            SDXL_MODEL_CACHE,
-            torch_dtype=torch.float16,
-            use_safetensors=True,
-            variant="fp16",
-        )
-        self.is_lora = True
-        # self.txt2img_pipe.load_lora_weights("./trained-model", weight_name="lora.safetensors", adapter_name="LUK")
-        self.load_trained_weights(None, self.txt2img_pipe7, 1400)
+        # self.txt2img_pipe7 = DiffusionPipeline.from_pretrained(
+        #     SDXL_MODEL_CACHE,
+        #     torch_dtype=torch.float16,
+        #     use_safetensors=True,
+        #     variant="fp16",
+        # )
+        # self.is_lora = True
+        # # self.txt2img_pipe.load_lora_weights("./trained-model", weight_name="lora.safetensors", adapter_name="LUK")
+        # self.load_trained_weights(None, self.txt2img_pipe7, 1400)
 
-        self.txt2img_pipe7.to("cuda")
+        # self.txt2img_pipe7.to("cuda")
 
         self.txt2img_pipe8 = DiffusionPipeline.from_pretrained(
             SDXL_MODEL_CACHE,
@@ -244,29 +244,29 @@ class Predictor(BasePredictor):
 
         self.txt2img_pipe8.to("cuda")
 
-        self.txt2img_pipe9 = DiffusionPipeline.from_pretrained(
-            SDXL_MODEL_CACHE,
-            torch_dtype=torch.float16,
-            use_safetensors=True,
-            variant="fp16",
-        )
-        self.is_lora = True
-        # self.txt2img_pipe.load_lora_weights("./trained-model", weight_name="lora.safetensors", adapter_name="LUK")
-        self.load_trained_weights(None, self.txt2img_pipe9, 1800)
+        # self.txt2img_pipe9 = DiffusionPipeline.from_pretrained(
+        #     SDXL_MODEL_CACHE,
+        #     torch_dtype=torch.float16,
+        #     use_safetensors=True,
+        #     variant="fp16",
+        # )
+        # self.is_lora = True
+        # # self.txt2img_pipe.load_lora_weights("./trained-model", weight_name="lora.safetensors", adapter_name="LUK")
+        # self.load_trained_weights(None, self.txt2img_pipe9, 1800)
 
-        self.txt2img_pipe9.to("cuda")
+        # self.txt2img_pipe9.to("cuda")
 
-        self.txt2img_pipe10 = DiffusionPipeline.from_pretrained(
-            SDXL_MODEL_CACHE,
-            torch_dtype=torch.float16,
-            use_safetensors=True,
-            variant="fp16",
-        )
-        self.is_lora = True
-        # self.txt2img_pipe.load_lora_weights("./trained-model", weight_name="lora.safetensors", adapter_name="LUK")
-        self.load_trained_weights(None, self.txt2img_pipe10, 2000)
+        # self.txt2img_pipe10 = DiffusionPipeline.from_pretrained(
+        #     SDXL_MODEL_CACHE,
+        #     torch_dtype=torch.float16,
+        #     use_safetensors=True,
+        #     variant="fp16",
+        # )
+        # self.is_lora = True
+        # # self.txt2img_pipe.load_lora_weights("./trained-model", weight_name="lora.safetensors", adapter_name="LUK")
+        # self.load_trained_weights(None, self.txt2img_pipe10, 2000)
 
-        self.txt2img_pipe10.to("cuda")
+        # self.txt2img_pipe10.to("cuda")
 
     def setup(self, weights: Optional[Path] = None):
         """Load the model into memory to make running multiple predictions efficient"""
@@ -481,15 +481,15 @@ class Predictor(BasePredictor):
             sdxl_kwargs["width"] = width
             sdxl_kwargs["height"] = height
             pipe1 = self.txt2img_pipe1
-            pipe2 = self.txt2img_pipe2
-            pipe3 = self.txt2img_pipe3
+            # pipe2 = self.txt2img_pipe2
+            # pipe3 = self.txt2img_pipe3
             pipe4 = self.txt2img_pipe4
-            pipe5 = self.txt2img_pipe5
-            pipe6 = self.txt2img_pipe6
-            pipe7 = self.txt2img_pipe7
+            # pipe5 = self.txt2img_pipe5
+            # pipe6 = self.txt2img_pipe6
+            # pipe7 = self.txt2img_pipe7
             pipe8 = self.txt2img_pipe8
-            pipe9 = self.txt2img_pipe9
-            pipe10 = self.txt2img_pipe10
+            # pipe9 = self.txt2img_pipe9
+            # pipe10 = self.txt2img_pipe10
 
         if refine == "expert_ensemble_refiner":
             sdxl_kwargs["output_type"] = "latent"
@@ -504,15 +504,15 @@ class Predictor(BasePredictor):
             self.refiner.watermark = None
 
         pipe1.scheduler = SCHEDULERS[scheduler].from_config(pipe1.scheduler.config)
-        pipe2.scheduler = SCHEDULERS[scheduler].from_config(pipe2.scheduler.config)
-        pipe3.scheduler = SCHEDULERS[scheduler].from_config(pipe3.scheduler.config)
+        # pipe2.scheduler = SCHEDULERS[scheduler].from_config(pipe2.scheduler.config)
+        # pipe3.scheduler = SCHEDULERS[scheduler].from_config(pipe3.scheduler.config)
         pipe4.scheduler = SCHEDULERS[scheduler].from_config(pipe4.scheduler.config)
-        pipe5.scheduler = SCHEDULERS[scheduler].from_config(pipe5.scheduler.config)
-        pipe6.scheduler = SCHEDULERS[scheduler].from_config(pipe6.scheduler.config)
-        pipe7.scheduler = SCHEDULERS[scheduler].from_config(pipe7.scheduler.config)
+        # pipe5.scheduler = SCHEDULERS[scheduler].from_config(pipe5.scheduler.config)
+        # pipe6.scheduler = SCHEDULERS[scheduler].from_config(pipe6.scheduler.config)
+        # pipe7.scheduler = SCHEDULERS[scheduler].from_config(pipe7.scheduler.config)
         pipe8.scheduler = SCHEDULERS[scheduler].from_config(pipe8.scheduler.config)
-        pipe9.scheduler = SCHEDULERS[scheduler].from_config(pipe9.scheduler.config)
-        pipe10.scheduler = SCHEDULERS[scheduler].from_config(pipe10.scheduler.config)
+        # pipe9.scheduler = SCHEDULERS[scheduler].from_config(pipe9.scheduler.config)
+        # pipe10.scheduler = SCHEDULERS[scheduler].from_config(pipe10.scheduler.config)
         generator = torch.Generator("cuda").manual_seed(seed)
 
         common_args = {
@@ -528,15 +528,15 @@ class Predictor(BasePredictor):
             sdxl_kwargs["cross_attention_kwargs"] = {"scale": lora_scale}
 
         output1 = pipe1(**common_args, **sdxl_kwargs)
-        output2 = pipe2(**common_args, **sdxl_kwargs)
-        output3 = pipe3(**common_args, **sdxl_kwargs)
+        # output2 = pipe2(**common_args, **sdxl_kwargs)
+        # output3 = pipe3(**common_args, **sdxl_kwargs)
         output4 = pipe4(**common_args, **sdxl_kwargs)
-        output5 = pipe5(**common_args, **sdxl_kwargs)
-        output6 = pipe6(**common_args, **sdxl_kwargs)
-        output7 = pipe7(**common_args, **sdxl_kwargs)
+        # output5 = pipe5(**common_args, **sdxl_kwargs)
+        # output6 = pipe6(**common_args, **sdxl_kwargs)
+        # output7 = pipe7(**common_args, **sdxl_kwargs)
         output8 = pipe8(**common_args, **sdxl_kwargs)
-        output9 = pipe9(**common_args, **sdxl_kwargs)
-        output10 = pipe10(**common_args, **sdxl_kwargs)
+        # output9 = pipe9(**common_args, **sdxl_kwargs)
+        # output10 = pipe10(**common_args, **sdxl_kwargs)
 
         if refine in ["expert_ensemble_refiner", "base_image_refiner"]:
             refiner_kwargs = {
@@ -567,23 +567,23 @@ class Predictor(BasePredictor):
             image.save(output_path)
             output_paths.append(Path(output_path))
 
-        for i, image in enumerate(output2.images):
-            if not disable_safety_checker:
-                if has_nsfw_content[i]:
-                    print(f"NSFW content detected in image {i}")
-                    continue
-            output_path = f"/tmp/out-2{i}.png"
-            image.save(output_path)
-            output_paths.append(Path(output_path))
+        # for i, image in enumerate(output2.images):
+        #     if not disable_safety_checker:
+        #         if has_nsfw_content[i]:
+        #             print(f"NSFW content detected in image {i}")
+        #             continue
+        #     output_path = f"/tmp/out-2{i}.png"
+        #     image.save(output_path)
+        #     output_paths.append(Path(output_path))
 
-        for i, image in enumerate(output3.images):
-            if not disable_safety_checker:
-                if has_nsfw_content[i]:
-                    print(f"NSFW content detected in image {i}")
-                    continue
-            output_path = f"/tmp/out-3{i}.png"
-            image.save(output_path)
-            output_paths.append(Path(output_path))
+        # for i, image in enumerate(output3.images):
+        #     if not disable_safety_checker:
+        #         if has_nsfw_content[i]:
+        #             print(f"NSFW content detected in image {i}")
+        #             continue
+        #     output_path = f"/tmp/out-3{i}.png"
+        #     image.save(output_path)
+        #     output_paths.append(Path(output_path))
 
         for i, image in enumerate(output4.images):
             if not disable_safety_checker:
@@ -594,32 +594,32 @@ class Predictor(BasePredictor):
             image.save(output_path)
             output_paths.append(Path(output_path))
 
-        for i, image in enumerate(output5.images):
-            if not disable_safety_checker:
-                if has_nsfw_content[i]:
-                    print(f"NSFW content detected in image {i}")
-                    continue
-            output_path = f"/tmp/out-5{i}.png"
-            image.save(output_path)
-            output_paths.append(Path(output_path))
+        # for i, image in enumerate(output5.images):
+        #     if not disable_safety_checker:
+        #         if has_nsfw_content[i]:
+        #             print(f"NSFW content detected in image {i}")
+        #             continue
+        #     output_path = f"/tmp/out-5{i}.png"
+        #     image.save(output_path)
+        #     output_paths.append(Path(output_path))
 
-        for i, image in enumerate(output6.images):
-            if not disable_safety_checker:
-                if has_nsfw_content[i]:
-                    print(f"NSFW content detected in image {i}")
-                    continue
-            output_path = f"/tmp/out-6{i}.png"
-            image.save(output_path)
-            output_paths.append(Path(output_path))
+        # for i, image in enumerate(output6.images):
+        #     if not disable_safety_checker:
+        #         if has_nsfw_content[i]:
+        #             print(f"NSFW content detected in image {i}")
+        #             continue
+        #     output_path = f"/tmp/out-6{i}.png"
+        #     image.save(output_path)
+        #     output_paths.append(Path(output_path))
 
-        for i, image in enumerate(output7.images):
-            if not disable_safety_checker:
-                if has_nsfw_content[i]:
-                    print(f"NSFW content detected in image {i}")
-                    continue
-            output_path = f"/tmp/out-7{i}.png"
-            image.save(output_path)
-            output_paths.append(Path(output_path))
+        # for i, image in enumerate(output7.images):
+        #     if not disable_safety_checker:
+        #         if has_nsfw_content[i]:
+        #             print(f"NSFW content detected in image {i}")
+        #             continue
+        #     output_path = f"/tmp/out-7{i}.png"
+        #     image.save(output_path)
+        #     output_paths.append(Path(output_path))
 
         for i, image in enumerate(output8.images):
             if not disable_safety_checker:
@@ -630,23 +630,23 @@ class Predictor(BasePredictor):
             image.save(output_path)
             output_paths.append(Path(output_path))
 
-        for i, image in enumerate(output9.images):
-            if not disable_safety_checker:
-                if has_nsfw_content[i]:
-                    print(f"NSFW content detected in image {i}")
-                    continue
-            output_path = f"/tmp/out-9{i}.png"
-            image.save(output_path)
-            output_paths.append(Path(output_path))
+        # for i, image in enumerate(output9.images):
+        #     if not disable_safety_checker:
+        #         if has_nsfw_content[i]:
+        #             print(f"NSFW content detected in image {i}")
+        #             continue
+        #     output_path = f"/tmp/out-9{i}.png"
+        #     image.save(output_path)
+        #     output_paths.append(Path(output_path))
 
-        for i, image in enumerate(output10.images):
-            if not disable_safety_checker:
-                if has_nsfw_content[i]:
-                    print(f"NSFW content detected in image {i}")
-                    continue
-            output_path = f"/tmp/out-10{i}.png"
-            image.save(output_path)
-            output_paths.append(Path(output_path))
+        # for i, image in enumerate(output10.images):
+        #     if not disable_safety_checker:
+        #         if has_nsfw_content[i]:
+        #             print(f"NSFW content detected in image {i}")
+        #             continue
+        #     output_path = f"/tmp/out-10{i}.png"
+        #     image.save(output_path)
+        #     output_paths.append(Path(output_path))
 
         if len(output_paths) == 0:
             raise Exception(
