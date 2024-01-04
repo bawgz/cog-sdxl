@@ -292,6 +292,8 @@ class Predictor(BasePredictor):
         if not os.path.exists(SDXL_MODEL_CACHE):
             download_weights(SDXL_URL, SDXL_MODEL_CACHE)
 
+        self.setup_text2img_pipes()
+
         print("Loading SDXL img2img pipeline...")
         self.img2img_pipe = StableDiffusionXLImg2ImgPipeline(
             vae=self.txt2img_pipe1.vae,
