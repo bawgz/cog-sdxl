@@ -136,7 +136,7 @@ class Predictor(BasePredictor):
         handler = TokenEmbeddingsHandler(
             [pipe.text_encoder, pipe.text_encoder_2], [pipe.tokenizer, pipe.tokenizer_2]
         )
-        handler.load_embeddings(os.path.join(local_weights_cache, "checkpoint-{checkpoint}.pti"))
+        handler.load_embeddings(os.path.join(local_weights_cache, f"checkpoint-{checkpoint}.pti"))
 
         # load params
         with open(os.path.join(local_weights_cache, "special_params.json"), "r") as f:
