@@ -51,9 +51,10 @@ class Predictor(BasePredictor):
         if not os.path.exists(SDXL_MODEL_CACHE):
             download_weights(SDXL_URL, SDXL_MODEL_CACHE)
             
-        self.pipe = DiffusionPipeline.from_pretrained("./sdxl-cache", torch_dtype=torch.float16).to("cuda")
+        self.pipe = DiffusionPipeline.from_pretrained("SDXL_MODEL_CACHE", torch_dtype=torch.float16).to("cuda")
 
-        self.pipe.load_lora_weights("./trained-model/", weight_name="lora.safetensors", adapter_name="ME")
+        self.pipe.load_lora_weights("./trained-model", weight_name="lora.safetensors", adapter_name="ME")
+        # self.pipe.load_lora_weights("./trained-model/", weight_name="reflective_lens_sunglasses_lora.safetensors", adapter_name="SUN")
 
         # pipe.load_textual_inversion("./trained-model-tok/", weight_name="embeddings.pti", token="TOK")
 
@@ -136,7 +137,7 @@ class Predictor(BasePredictor):
 
         print(f"Prompt: {prompt}")
 
-        # self.pipe.set_adapters(["LUK", "TOK"], adapter_weights=[lora_scale, lora_scale2])
+        # self.pipe.set_adapters(["ME", "SUN"], adapter_weights=[lora_scale, lora_scale2])
 
         sdxl_kwargs = {}
 
