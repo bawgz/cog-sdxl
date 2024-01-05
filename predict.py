@@ -53,9 +53,7 @@ class Predictor(BasePredictor):
             
         self.pipe = DiffusionPipeline.from_pretrained(SDXL_MODEL_CACHE, torch_dtype=torch.float16).to("cuda")
 
-        self.pipe.load_lora_weights("./trained-model", weight_name="lora.safetensors", adapter_name="ME")
-        # self.pipe.load_lora_weights("./trained-model/", weight_name="reflective_lens_sunglasses_lora.safetensors", adapter_name="SUN")
-
+        self.pipe.load_lora_weights("./trained-model-luk/", weight_name="lora.safetensors", adapter_name="LUK")
         # pipe.load_textual_inversion("./trained-model-tok/", weight_name="embeddings.pti", token="TOK")
 
         print("Loading SDXL refiner pipeline...")
