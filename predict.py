@@ -54,7 +54,7 @@ class Predictor(BasePredictor):
         self.pipe = DiffusionPipeline.from_pretrained(SDXL_MODEL_CACHE, torch_dtype=torch.float16).to("cuda")
 
         self.pipe.load_lora_weights("bawgz/my-lora", weight_name="lora.safetensors", adapter_name="LUK")
-        # pipe.load_textual_inversion("./trained-model-tok/", weight_name="embeddings.pti", token="TOK")
+        self.pipe.load_lora_weights("bawgz/drip-glasses", weight_name="lora.safetensors", adapter_name="TOK")
 
         print("Loading SDXL refiner pipeline...")
         # FIXME(ja): should the vae/text_encoder_2 be loaded from SDXL always?
@@ -135,7 +135,7 @@ class Predictor(BasePredictor):
 
         print(f"Prompt: {prompt}")
 
-        # self.pipe.set_adapters(["ME", "SUN"], adapter_weights=[lora_scale, lora_scale2])
+        self.pipe.set_adapters(["LUK", "TOK"], adapter_weights=[lora_scale, lora_scale2])
 
         sdxl_kwargs = {}
 
@@ -145,7 +145,7 @@ class Predictor(BasePredictor):
         elif refine == "base_image_refiner":
             sdxl_kwargs["output_type"] = "latent"
 
-        sdxl_kwargs["cross_attention_kwargs"] = {"scale": lora_scale}
+        sdxl_kwargs["cross_attention_kwargs"] = {"scale": 1.0}
 
         common_args = {
             "prompt": prompt,
