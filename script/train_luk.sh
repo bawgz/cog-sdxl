@@ -1,1 +1,1 @@
-sudo cog train -i input_images="https://replicate.delivery/pbxt/K5IafGgyGLIhAn3yqMSZe3H26Mrp44prmxorUpVhQnN7efQh/data.zip" -i token_string="luk_man" -i caption_prefix="a photo of luk_man man, " -i use_face_detection_instead=True
+sudo cog train -i input_images="https://replicate.delivery/pbxt/KAFzTB7svN2l7vJaiwbfL7rVzjSiijDGpCHDKhp8qBKSQjVR/me2.zip" -i token_string="tom felton" -i caption_prefix="a photo of tom felton, " -i use_face_detection_instead=True -i resolution=1024 -i train_batch_size=1 -i max_train_steps=2000 -i checkpointing_steps=500 -i lora_lr=0.0003

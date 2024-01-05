@@ -1,1 +1,1 @@
-sudo cog predict -i prompt="a photo of TOK"
+cog predict -i prompt="a photo of tom felton man at a coffee shop" -i lora_scale=1.0 -i seed=0 -i refine=expert_ensemble_refiner -i high_noise_frac=0.95
